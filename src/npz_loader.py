@@ -185,7 +185,7 @@ def npz_to_autograph(dataset, remove_selfloop, npz_dir='../npz-data', sample_num
 
 
 if __name__ == '__main__':
-    npz_to_autograph('az-cs', remove_selfloop=True, sample_num=None)
-    npz_to_autograph('az-po', remove_selfloop=True, sample_num=None)
-    npz_to_autograph('co-cs', remove_selfloop=True, sample_num=None)
+    npz_to_autograph('az-cs', remove_selfloop=True, sample_num=None, time_budget=200)
+    npz_to_autograph('az-po', remove_selfloop=True, sample_num=None, time_budget=200)
+    npz_to_autograph('co-cs', remove_selfloop=True, sample_num=None, time_budget=200)
     npz_to_autograph('co-phy', remove_selfloop=True, sample_num=None, time_budget=300)
