@@ -90,21 +90,21 @@ def transform_to_autograph_format(features, labels, adj, node_indexs, n_class, o
     feat_cols = ["f{}".format(i) for i in range(features.shape[1])]
     feat_table.columns = feat_cols
     feat_table.insert(0, "node_index", node_indexs)
-    feat_table.to_csv(os.path.join(train_dir, 'feature.tsv'), index=None, sep='\t')
+    feat_table.to_csv(os.path.join(train_dir, 'feature.tsv'), index=False, sep='\t')
     print("finish feature.tsv, features shape {}".format(features.shape))
 
     train_labels = labels[train_indices]
     train_label_tsv = pd.DataFrame({"node_index": train_indices, "label": train_labels.tolist()})
-    train_label_tsv.to_csv(os.path.join(train_dir, "train_label.tsv"), index=None, sep='\t')
+    train_label_tsv.to_csv(os.path.join(train_dir, "train_label.tsv"), index=False, sep='\t')
     print("finish train_label.tsv")
 
     test_labels = labels[test_indices]
     test_label_tsv = pd.DataFrame({"node_index": test_indices, "label": test_labels.tolist()})
-    test_label_tsv.to_csv(os.path.join(output_dir, "test_label.tsv"), index=None, sep='\t')
+    test_label_tsv.to_csv(os.path.join(output_dir, "test_label.tsv"), index=False, sep='\t')
     print("finish test_label.tsv")
 
     edge_tsv = pd.DataFrame({"src_idx": adj.row, "dst_idx": adj.col, "edge_weight": adj.data})
-    edge_tsv.to_csv(os.path.join(train_dir, "edge.tsv"), index=None, sep='\t')
+    edge_tsv.to_csv(os.path.join(train_dir, "edge.tsv"), index=False, sep='\t')
     print("finish edge.tsv")
 
     with open(os.path.join(train_dir, "train_node_id.txt"), 'w', encoding='utf8') as fout:
@@ -123,6 +123,7 @@ def transform_to_autograph_format(features, labels, adj, node_indexs, n_class, o
 
 
 def npz_to_autograph(dataset, remove_selfloop, npz_dir='../npz-data', sample_num=None, time_budget=150):
+    print("*"*30, "Start!", "*"*30)
     features, labels, adj_matrix = load_npz(dataset, npz_dir=npz_dir)
     assert features.shape[0] == labels.shape[0]
     raw_data_info = {
@@ -135,6 +136,7 @@ def npz_to_autograph(dataset, remove_selfloop, npz_dir='../npz-data', sample_num
         "edge_weight_only_ones": (adj_matrix.data == 1).all()
     }
     print("{}: raw data info \n{}".format(dataset, raw_data_info))
+    print(len(np.unique(np.where((features != 0.0) & (features != 1.0))[0])))
 
     adj_matrix = adj_matrix.tocsr()
     adj_matrix = adj_matrix + adj_matrix.T
@@ -171,6 +173,7 @@ def npz_to_autograph(dataset, remove_selfloop, npz_dir='../npz-data', sample_num
     }
     print("{}: processed data info: \n{}".format(dataset, processed_data_info))
 
+    # output directory control
     output_dir = os.path.dirname(__file__) + '/../data-offline'
     os.makedirs(output_dir, exist_ok=True)
     sample_num_str = "" if sample_num is None else str(sample_num)
@@ -180,12 +183,12 @@ def npz_to_autograph(dataset, remove_selfloop, npz_dir='../npz-data', sample_num
     train_dir = os.path.join(data_dir, 'train.data')
     os.makedirs(data_dir, exist_ok=True)
     os.makedirs(train_dir, exist_ok=True)
-    transform_to_autograph_format(features, labels, adj_matrix, node_indexs, n_class, output_dir, train_dir, time_budget)
-    print("*"*20, "Finish!", "*"*20)
+    transform_to_autograph_format(features, labels, adj_matrix, node_indexs, n_class, data_dir, train_dir, time_budget)
+    print("*"*30, "Finish!", "*"*30)
 
 
 if __name__ == '__main__':
-    npz_to_autograph('az-cs', remove_selfloop=True, sample_num=None, time_budget=200)
-    npz_to_autograph('az-po', remove_selfloop=True, sample_num=None, time_budget=200)
-    npz_to_autograph('co-cs', remove_selfloop=True, sample_num=None, time_budget=200)
-    npz_to_autograph('co-phy', remove_selfloop=True, sample_num=None, time_budget=300)
+    # npz_to_autograph('az-cs', remove_selfloop=True, sample_num=None, time_budget=200)
+    # npz_to_autograph('az-po', remove_selfloop=True, sample_num=None, time_budget=200)
+    npz_to_autograph('cora_full', remove_selfloop=True, sample_num=None, time_budget=200)
+    # npz_to_autograph('co-phy', remove_selfloop=True, sample_num=None, time_budget=300)
