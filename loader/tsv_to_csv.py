@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Time:    2020/5/27 18:59
-# @Author:  Mecthew
 import os
 import pandas as pd
 

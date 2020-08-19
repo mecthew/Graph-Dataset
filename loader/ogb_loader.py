@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-# @Time:    2020/5/28 21:22
-# @Author:  Mecthew
 import os
 import shutil
 from ogb.nodeproppred import PygNodePropPredDataset
